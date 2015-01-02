@@ -111,7 +111,6 @@ sub _build_filename {
   eval {
     find(sub {
 	   if ($File::Find::name =~ m|\/$file$|) {
-	     warn "found file : ", $File::Find::name;
 	     $matching_filename = $File::Find::name;
 	     die "matched";
 	   }

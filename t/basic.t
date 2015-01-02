@@ -4,11 +4,16 @@ use Test::More;
 use Test::Exception;
 use FindBin;
 
+use File::Compare;
+use File::Temp;
+use MIME::Base64 qw(decode_base64);
+
 use Data::Dumper;
 use lib qw(lib/);
 
-use File::Compare;
+
 use Email::Assets;
+
 
 my @test_paths = map { $FindBin::Bin . '/'. $_ } qw(aa bb cc);
 
@@ -30,8 +35,18 @@ is ($cid, $asset->cid, 'cid matches for same image');
 for my $asset ($assets->exports) {
   my $mime_part = $asset->as_mime_part;
   isa_ok($mime_part, 'MIME::Lite');
-  is('image/png', $mime_part->attr("content-type"), 'content type correct');
-#  warn Dumper(part => $mime_part);
+  is($mime_part->attr("content-type"), 'image/png', 'content type correct');
+
+  my $data_string = $asset->inline_data;
+  my ($content_type, $encoding) = $data_string =~ m/(.*?);(.*?),.*/m;
+  is($content_type, 'image/png', 'inline data content type correct');
+  is($encoding, 'base64', 'inline data encoding type correct');
+  my $fh = File::Temp->new();
+  my $fname = $fh->filename;
+  $data_string =~ s|image/png;base64,||;
+  print $fh decode_base64($data_string);
+  close $fh;
+  ok(compare($fname,$asset->filename) == 0, 'file matches from inline data after decoding');
 }
 
 dies_ok( sub { $assets->include($missing_image) }, 'missing image causes fatal error');
