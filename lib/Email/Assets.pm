@@ -73,6 +73,11 @@ sub to_mime_parts {
     return [ map { $_->as_mime_parts } grep { $_->not_inline_only } $self->_all_assets ];
 }
 
+=head1 DESCRIPION
+
+Simple to use library for file assets in email, allowing you to link using cid or inline, with export
+to MIME::Lite message parts
+
 =head1 SYNOPSIS
 
    use Email::Assets;
