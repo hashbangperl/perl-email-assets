@@ -1,4 +1,3 @@
-use 5.006;
 use strict;
 use warnings FATAL => 'all';
 use ExtUtils::MakeMaker;
@@ -16,10 +15,12 @@ WriteMakefile(
     },
     BUILD_REQUIRES => {
         'Test::More' => 0,
+	'Test::Exception' => 0,
     },
     PREREQ_PM => {
-        #'ABC'              => 1.6,
-        #'Foo::Bar::Module' => 5.0401,
+        'Moose' => 0,
+        'MIME::Types' => 0,
+        'MIME::Base64' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Email-Assets-*' },

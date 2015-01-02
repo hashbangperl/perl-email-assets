@@ -14,47 +14,88 @@ Version 0.01
 
 our $VERSION = '0.01';
 
+use MIME::Types;
+use Email::Assets::File;
+
 has base => (
 	     is => 'ro',
 );
 
-sub include {
+has mime_types => (
+		    is => 'ro',
+		    lazy => 1,
+		    default => sub { return MIME::Types->new(); },
+);
 
+has _assets => (
+		traits  => ['Hash'],
+		is      => 'ro',
+		isa     => 'HashRef[Email::Assets::File]',
+		default => sub { {} },
+		handles => {
+			    _asset_exists => 'exists',
+			    names => 'keys',
+			    _set_asset => 'set',
+			    _get_asset => 'get',
+			    _all_assets => 'values',
+			   }
+);
+
+sub include {
+    my ($self, $filename, $options) = @_;
+    $options ||= { inline_only => 0 };
+
+    if ($self->_asset_exists($filename)) {
+      return $self->_get_asset($filename);
+    }
+
+    my $asset = Email::Assets::File->new({
+					  mime_types => $self->mime_types,
+					  base_paths => $self->base,
+					  relative_filename => $filename,
+					  inline_only => $options->{inline_only}
+					 });
+    $self->_set_asset($filename => $asset);
+    return $asset;
 }
 
 sub exports {
-
+  return shift->_all_assets;
 }
 
+sub get {
+    my ($self, $filename) = @_;
+    return $self->_get_asset($filename);
+}
+
+sub to_mime_parts {
+    my $self = shift;
+    return [ map { $_->as_mime_parts } grep { $_->not_inline_only } $self->_all_assets ];
+}
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+   use Email::Assets;
 
-Perhaps a little code snippet.
+   my $assets = Email::Assets->new( base => [ $uri_root, $dir_root ] );
 
-use Email::Assets;
+   # Email::Assets will automatically detect the type based on the extension
+   my $asset = $assets->include("/static/foo.gif");
 
-my $assets = Email::Assets->new( base => [ $uri_root, $dir_root ] )
+   # This asset won't get attached twice, as Email::Assets will ignore repeats of a path
+   my $cid = $assets->include("/static/foo.gif")->cid;
 
-# Email::Assets will automatically detect the type based on the extension
-$assets->include("/static/foo.gif")
+   # Or you can iterate (in order)
+   for my $asset ($assets->exports) {
+     print $asset->cid, "\n";
+     my $mime_part = $asset->as_mime_part;
+  }
 
-# You can also include external assets:
-$assets->include("http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js");
- 
-# This asset won't get included twice, as File::Assets will ignore repeats of a path
-$assets->include("/static/style.css")
- 
-# And finally ...
-$assets->export
- 
-# Or you can iterate (in order)
-for my $asset ($assets->exports) {
-     
-    print $asset->uri, "\n";
- 
-}
+..or in a template :
+
+  <img src="cid://[% assets.include('static/foo.gif').cid %]">
+  [% # or %]
+  <img src="data:[% assets.include('static/foo.gif', {inline_only => 1}).inline_data">
 
 =head1 ATTRIBUTES
 
