@@ -1,6 +1,12 @@
 package Email::Assets::File;
 use Moose;
 
+=head1 NAME
+
+Email::Assets - Manage assets for Email
+
+=cut
+
 use MIME::Types;
 use MIME::Base64 qw(encode_base64);
 use MIME::Lite;
@@ -122,5 +128,39 @@ sub _build_filename {
   return $matching_filename;
 
 }
+
+=head1 ATTRIBUTES
+
+=head2 mime_types - MIME::Types object
+
+=head2 cid
+
+=head2 inline_only - boolean flag, allows you to attach only appropriate assets to a mail
+
+=head2 base_paths - arrayref of where to look for files
+
+=head2 relative_filename - relative path and filename for a file
+
+=head1 METHODS
+
+=head2 filename - full filename and path
+
+=head2 mime_type - MIME or content-type of file
+
+=head2 BUILD - moose method called by constructor, handles validating path to file
+
+=head2 inline_data - method to get file as inline-data string, including content type and base64 encoded file contents
+
+=head2 file_as_base64 - get file contents encoded in base64
+
+=head2 as_mime_part - get file as a MIME::Lite object
+
+=head2 not_inline_only - opposite to inline_only
+
+=head1 AUTHOR
+
+Aaron J Trevena, C<< <teejay at cpan.org> >>
+
+=cut
 
 1;

@@ -1,5 +1,4 @@
 package Email::Assets;
-
 use Moose;
 
 =head1 NAME
@@ -104,9 +103,27 @@ to MIME::Lite message parts
 
 =head1 ATTRIBUTES
 
-=head1 SUBROUTINES/METHODS
+=head2 mime_types - MIME::Types object
 
-=head2 methods
+=head2 base - arrayref of paths to find files in
+
+=head1 METHODS
+
+=head2 include - add an asset, returns Email::Assets::File object
+
+=head2 exports - get all assets, returns list of Email::Assets::File objects
+
+=head2 get - get an asset by name
+
+=head2 to_mime_parts - return assets that aren't inline_only as MIME::Lite objects
+
+=head1 SEE ALSO
+
+Email::Assets::File
+
+MIME::Lite
+
+File::Assets
 
 =head1 AUTHOR
 
