@@ -23,6 +23,8 @@ WriteMakefile(
         'Moose' => 0,
         'MIME::Types' => 0,
         'MIME::Base64' => 0,
+	'File::Type' => 0.22,
+	'MIME::Lite' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Email-Assets-*' },

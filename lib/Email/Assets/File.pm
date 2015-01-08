@@ -8,10 +8,11 @@ Email::Assets - Manage assets for Email
 =cut
 
 use MIME::Types;
-use MIME::Base64 qw(encode_base64);
+use MIME::Base64 qw(encode_base64 decode_base64);
 use MIME::Lite;
 use Data::UUID;
 use File::Find;
+use File::Type;
 
 has mime_types => (
 		    is => 'ro',
@@ -43,19 +44,44 @@ has filename => (
 		 is => 'ro',
 		 lazy => 1,
 		 builder => '_build_filename',
+		 writer => '_set_filename',
 		);
 
 has mime_type => (
 		  is => 'ro',
 		  lazy => 1,
 		  builder => '_build_mime_type',
-
+		  writer => '_set_mime_type',
 		 );
 
+has _has_physical_file => (
+			   is => 'ro',
+                           isa => 'Int',
+			   writer => '_set_has_physical_file',
+			 );
+
+has _base64_data => (
+		     is => 'ro',
+		     writer => '_set_base64_data',
+		     predicate => '_has_base64_data',
+		   );
+
 sub BUILD {
-  my $self = shift;
-  # check we have valid paths & file
-  $self->filename || die "couldn't find path/file";
+  my ($self, $args) = @_;
+  if ($args->{base64_data}) {
+    $self->_set_filename($self->relative_filename);
+    $self->_set_has_physical_file(0);
+    $self->_set_base64_data($args->{base64_data});
+    my $ft = File::Type->new;
+    my $magic_string = decode_base64(substr($args->{base64_data},0,30));
+    my $mime_type = $ft->mime_type($magic_string);
+    $self->_set_mime_type($mime_type);
+  } else {
+    # check we have valid paths & file
+    $self->filename || die "couldn't find path/file";
+    $self->_set_has_physical_file(1);
+  }
+  return ;
 }
 
 sub inline_data {
@@ -69,6 +95,11 @@ sub inline_data {
 
 sub file_as_base64 {
   my $self = shift;
+
+  if ($self->_has_base64_data) {
+    return $self->_base64_data;
+  }
+
   my $filename = $self->filename;
   my $base64 = '';
   my $buf;
@@ -77,6 +108,8 @@ sub file_as_base64 {
        $base64 .= encode_base64($buf) . "\n";
   }
   close (FILE);
+  $self->_set_base64_data($base64);
+
   return $base64;
 }
 

@@ -7,11 +7,11 @@ Email::Assets - Manage assets for Email
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use MIME::Types;
 use Email::Assets::File;
@@ -58,6 +58,21 @@ sub include {
     return $asset;
 }
 
+sub include_base64 {
+    my ($self, $base64_string, $filename, $options) = @_;
+    $options ||= { inline_only => 0 };
+    my $asset = Email::Assets::File->new({
+					  mime_types => $self->mime_types,
+					  base_paths => $self->base,
+					  relative_filename => $filename,
+					  base64_data => $base64_string,
+					  inline_only => $options->{inline_only}
+					 });
+    $self->_set_asset($filename => $asset);
+    return $asset;
+}
+
+
 sub exports {
   return shift->_all_assets;
 }
@@ -86,6 +101,10 @@ to MIME::Lite message parts
    # Email::Assets will automatically detect the type based on the extension
    my $asset = $assets->include("/static/foo.gif");
 
+   # or
+
+   my $asset = $assets->include_base64( $image_base64 );
+
    # This asset won't get attached twice, as Email::Assets will ignore repeats of a path
    my $cid = $assets->include("/static/foo.gif")->cid;
 
@@ -103,27 +122,47 @@ to MIME::Lite message parts
 
 =head1 ATTRIBUTES
 
-=head2 mime_types - MIME::Types object
+=head2 mime_types
 
-=head2 base - arrayref of paths to find files in
+MIME::Types object
+
+=head2 base
+
+arrayref of paths to find files in
 
 =head1 METHODS
 
-=head2 include - add an asset, returns Email::Assets::File object
+=head2 include
 
-=head2 exports - get all assets, returns list of Email::Assets::File objects
+Add an asset, takes filename (required), then hashref of options (inline_only currently only one supported), returns Email::Assets::File object
 
-=head2 get - get an asset by name
+=head2 include_base64
 
-=head2 to_mime_parts - return assets that aren't inline_only as MIME::Lite objects
+Add an asset already encoded in base64, takes string holding base64 encoded file, then hashref of options (inline_only currently only one supported), returns Email::Assets::File object
+
+=head2 exports
+
+Get all assets, returns list of Email::Assets::File objects
+
+=head2 get
+
+Get an asset by name, takes relative path, returns Email::Assets::File object
+
+=head2 to_mime_parts
+
+Returns assets that aren't inline_only as MIME::Lite objects
 
 =head1 SEE ALSO
 
-Email::Assets::File
+=over 4
 
-MIME::Lite
+=item L<Email::Assets::File>
 
-File::Assets
+=item L<MIME::Lite>
+
+=item L<File::Assets>
+
+=back
 
 =head1 AUTHOR
 
