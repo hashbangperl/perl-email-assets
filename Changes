@@ -1,5 +1,8 @@
 Revision history for Email-Assets
 
+0.03    09/01/2015
+        - improved mime handling
+
 0.02    08/01/2015
         - added new include_base64 method
         - fixed missing MIME::Lite pre-req

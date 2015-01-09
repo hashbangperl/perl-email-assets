@@ -132,7 +132,7 @@ sub not_inline_only {
 sub _build_mime_type {
   my $self = shift;
   my $mime_type = $self->mime_types->mimeTypeOf($self->filename);
-  return $mime_type;
+  return $mime_type->simplified;
 }
 
 sub _build_cid {
