@@ -71,4 +71,9 @@ print $fh decode_base64($new_asset->file_as_base64);
 close $fh;
 ok(compare($fname, $png_filename) == 0, 'file matches from base64 data after decoding');
 
+
+
+isa_ok(shift($assets->to_mime_parts), 'MIME::Lite', 'to_mime_parts works ok');
+
+
 done_testing();

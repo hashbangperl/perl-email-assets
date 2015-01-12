@@ -7,11 +7,11 @@ Email::Assets - Manage assets for Email
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use MIME::Types;
 use Email::Assets::File;
@@ -84,7 +84,7 @@ sub get {
 
 sub to_mime_parts {
     my $self = shift;
-    return [ map { $_->as_mime_parts } grep { $_->not_inline_only } $self->_all_assets ];
+    return [ map { $_->as_mime_part } grep { $_->not_inline_only } $self->_all_assets ];
 }
 
 =head1 DESCRIPION
@@ -134,11 +134,11 @@ arrayref of paths to find files in
 
 =head2 include
 
-Add an asset, takes filename (required), then hashref of options (inline_only currently only one supported), returns Email::Assets::File object
+Add an asset, takes filename (required), then optional hashref of options (inline_only currently only one supported), returns Email::Assets::File object
 
 =head2 include_base64
 
-Add an asset already encoded in base64, takes string holding base64 encoded file, then hashref of options (inline_only currently only one supported), returns Email::Assets::File object
+Add an asset already encoded in base64, takes string holding base64 encoded file, filename, then optional hashref of options (inline_only currently only one supported), returns Email::Assets::File object
 
 =head2 exports
 
