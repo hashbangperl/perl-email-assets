@@ -18,6 +18,7 @@ WriteMakefile(
 	'Test::Exception' => 0,
         'File::Temp' => 0,
         'File::Compare' => 0,
+        'File::Slurp' => 0,
     },
     PREREQ_PM => {
         'Moose' => 0,
