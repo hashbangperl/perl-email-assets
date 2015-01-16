@@ -8,7 +8,7 @@ Email::Assets - Manage assets for Email
 =cut
 
 use MIME::Types;
-use MIME::Base64 qw(encode_base64 decode_base64);
+use MIME::Base64 qw(encode_base64 decode_base64 encode_base64url decode_base64url);
 use MIME::Lite;
 use Data::UUID;
 use File::Find;
@@ -71,9 +71,19 @@ sub BUILD {
   if ($args->{base64_data}) {
     $self->_set_filename($self->relative_filename);
     $self->_set_has_physical_file(0);
-    $self->_set_base64_data($args->{base64_data});
+
+    my $base64_data = $args->{base64_data};
+    my $magic_string;
+    if ( $args->{url_encoding} ) {
+	my $raw_image = decode_base64url($base64_data);
+	$magic_string = substr($raw_image, 0, 30);
+	$base64_data = encode_base64($raw_image);
+    } else {
+	$magic_string = decode_base64(substr($base64_data,0,30));
+    }
+    $self->_set_base64_data($base64_data);
+
     my $ft = File::Type->new;
-    my $magic_string = decode_base64(substr($args->{base64_data},0,30));
     my $mime_type = $ft->mime_type($magic_string);
     $self->_set_mime_type($mime_type);
   } else {
@@ -148,11 +158,14 @@ sub _build_filename {
   }
   my $matching_filename = '';
   eval {
-    find(sub {
-	   if ($File::Find::name =~ m|\/$file$|) {
-	     $matching_filename = $File::Find::name;
-	     die "matched";
-	   }
+    find({
+	  no_chdir => 1,
+	  wanted => sub {
+	    if ($File::Find::name =~ m|\/$file$|) {
+	      $matching_filename = $File::Find::name;
+	      die "matched";
+	    }
+	  }
 	 }, @{$self->base_paths});
   };
   unless ($matching_filename) {

@@ -7,11 +7,11 @@ Email::Assets - Manage assets for Email
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use MIME::Types;
 use Email::Assets::File;
@@ -66,7 +66,8 @@ sub include_base64 {
 					  base_paths => $self->base,
 					  relative_filename => $filename,
 					  base64_data => $base64_string,
-					  inline_only => $options->{inline_only}
+					  inline_only => $options->{inline_only},
+					  url_encoding => $options->{url_encoding},
 					 });
     $self->_set_asset($filename => $asset);
     return $asset;
@@ -138,7 +139,19 @@ Add an asset, takes filename (required), then optional hashref of options (inlin
 
 =head2 include_base64
 
-Add an asset already encoded in base64, takes string holding base64 encoded file, filename, then optional hashref of options (inline_only currently only one supported), returns Email::Assets::File object
+Object method. Adds an asset already encoded in base64, returns that asset.
+
+Takes string holding base64 encoded file, filename, then optional hashref of options:
+
+=over 4
+
+=item inline_only - exclude asset from to_mime_parts, to avoid adding un-necessary size & attachments
+
+=item url_encoded - base64 encoding is "url safe" so use base64url decoder, and re-encode for MIME::Lite, etc as not suited for most email use.
+
+=back
+
+Returns Email::Assets::File object.
 
 =head2 exports
 
