@@ -10,4 +10,5 @@ t/pod-coverage.t
 t/pod.t
 t/basic.t
 t/aa/test.png
+t/aa/codeworks.jpg
 t/bb/test.txt

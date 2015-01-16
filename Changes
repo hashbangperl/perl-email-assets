@@ -1,4 +1,7 @@
 Revision history for Email-Assets
+0.06    15/01/2015
+	- include missing image for tests
+
 0.05    15/01/2015
         - fixed chdir causing issues with paths
         - added option to use base64 urlsafe decode when adding base64 encoded assets
