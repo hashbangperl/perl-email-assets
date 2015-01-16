@@ -1,4 +1,10 @@
 Revision history for Email-Assets
+0.05    15/01/2015
+        - fixed chdir causing issues with paths
+        - added option to use base64 urlsafe decode when adding base64 encoded assets
+
+0.04   - fixed error when calling to_mime_parts
+       - fixed pod for include_base64
 
 0.03    09/01/2015
         - improved mime handling
