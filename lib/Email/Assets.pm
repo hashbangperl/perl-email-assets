@@ -7,11 +7,11 @@ Email::Assets - Manage assets for Email
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use MIME::Types;
 use Email::Assets::File;
