@@ -14,6 +14,8 @@ use Data::UUID;
 use File::Find;
 use File::Type;
 
+use Data::Dumper;
+
 has mime_types => (
 		    is => 'ro',
 		    lazy => 1,
@@ -125,10 +127,16 @@ sub file_as_base64 {
 
 sub as_mime_part {
     my $self = shift;
-    my $part = MIME::Lite->new( Type => $self->mime_type,
-			     Filename => $self->filename,
-			     Id => $self->cid,
-	);
+    my %mime_args = ( Type => $self->mime_type,
+		      Id => $self->cid );
+
+    if ($self->_has_physical_file) {
+	$mime_args{Filename} = $self->filename;
+    } else {
+	$mime_args{Data} = decode_base64($self->file_as_base64);
+    }
+
+    my $part = MIME::Lite->new( %mime_args );
     return $part;
 }
 
