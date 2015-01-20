@@ -74,18 +74,4 @@ ok(compare($fname, $png_filename) == 0, 'file matches from base64 data after dec
 
 isa_ok(shift($assets->to_mime_parts), 'MIME::Lite', 'to_mime_parts works ok');
 
-use Cwd;
-my $dir = getcwd;
-warn "dir : $dir";
-my $raw_image = read_file('t/aa/codeworks.jpg');
-my $base_64_url_image = encode_base64url($raw_image);
-$assets = Email::Assets->new( base => [ @test_paths ] );
-my $base64_url_asset = $assets->include_base64($base_64_url_image, 'codeworks.jpg', { url_encoding => 1 } );
-is($base64_url_asset->mime_type, 'image/jpeg', 'detected mime type ok');
-$fh = File::Temp->new();
-$fname = $fh->filename;
-print $fh decode_base64($base64_url_asset->file_as_base64);
-close $fh;
-ok(compare($fname, 't/aa/codeworks.jpg') == 0, 'file matches from base64 url data after decoding');
-
 done_testing();
