@@ -1,5 +1,8 @@
 Revision history for Email-Assets
 
+0.08    20/01/2015
+	- fix handling base64 added assets
+
 0.07    19/01/2015
         -fix missing pre-req on Data::UUID
 
