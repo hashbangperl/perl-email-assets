@@ -16,6 +16,7 @@ WriteMakefile(
     BUILD_REQUIRES => {
         'Test::More' => 0,
 	'Test::Exception' => 0,
+        'Test::Differences' => 0,
         'File::Temp' => 0,
         'File::Compare' => 0,
         'File::Slurp' => 0,
