@@ -102,7 +102,9 @@ sub inline_data {
 				   $self->mime_type,
 				   $self->file_as_base64
 				  );
-  chomp($inline_data_string);
+  # strip trailing whitespace, and all newlines
+  $inline_data_string =~ s/\n//mg;
+  $inline_data_string =~ s/[\n\s]*$//;
   return $inline_data_string;
 }
 
@@ -187,15 +189,23 @@ sub _build_filename {
 
 =head1 ATTRIBUTES
 
-=head2 mime_types - MIME::Types object
+=head2 mime_types
+
+MIME::Types object
 
 =head2 cid
 
-=head2 inline_only - boolean flag, allows you to attach only appropriate assets to a mail
+=head2 inline_only
 
-=head2 base_paths - arrayref of where to look for files
+boolean flag, allows you to attach only appropriate assets to a mail
 
-=head2 relative_filename - relative path and filename for a file
+=head2 base_paths
+
+arrayref of where to look for files
+
+=head2 relative_filename
+
+relative path and filename for a file
 
 =head1 METHODS
 
@@ -217,6 +227,8 @@ Object method to get file as inline-data string, including content type and base
 
 <img src="data:[% assets.include('static/foo.gif', {inline_only => 1}).inline_data -%]"> 
 
+See wikipedia reference in SEE ALSO for details on limited support & pro/cons of using inline data over cid
+
 =head2 file_as_base64
 
 Object method to get file contents encoded in base64
@@ -228,6 +240,20 @@ Object method to get file as a MIME::Lite object, takes optional hashref of argu
 =head2 not_inline_only
 
 Object accessor method, returns opposite to inline_only
+
+=head1 SEE ALSO
+
+=over 4
+
+=item L<http://en.wikipedia.org/wiki/Data_URI_scheme#Email_Client_support>
+
+=item L<http://stackoverflow.com/a/23853079>
+
+=item L<MIME::Lite>
+
+=item L<MIME::Base46>
+
+=back
 
 =head1 AUTHOR
 
