@@ -102,6 +102,7 @@ sub inline_data {
 				   $self->mime_type,
 				   $self->file_as_base64
 				  );
+  chomp($inline_data_string);
   return $inline_data_string;
 }
 
@@ -126,8 +127,10 @@ sub file_as_base64 {
 }
 
 sub as_mime_part {
-    my $self = shift;
+    my ($self, $args) = @_;
+    $args ||= { disposition => 'attachment' };
     my %mime_args = ( Type => $self->mime_type,
+		      Disposition => $args->{disposition} || 'attachment',
 		      Id => $self->cid );
 
     if ($self->_has_physical_file) {
@@ -145,7 +148,6 @@ sub not_inline_only {
 }
 
 ####
-
 
 sub _build_mime_type {
   my $self = shift;
@@ -197,19 +199,35 @@ sub _build_filename {
 
 =head1 METHODS
 
-=head2 filename - full filename and path
+=head2 filename
 
-=head2 mime_type - MIME or content-type of file
+Object accessor method, returns full filename and path (which may not exist if the asset was created from data instead of a file).
 
-=head2 BUILD - moose method called by constructor, handles validating path to file
+=head2 mime_type
 
-=head2 inline_data - method to get file as inline-data string, including content type and base64 encoded file contents
+Object accessor method, returns MIME type / content-type of the asset
 
-=head2 file_as_base64 - get file contents encoded in base64
+=head2 BUILD
 
-=head2 as_mime_part - get file as a MIME::Lite object
+moose method called by constructor, handles validating path to file
 
-=head2 not_inline_only - opposite to inline_only
+=head2 inline_data
+
+Object method to get file as inline-data string, including content type and base64 encoded file contents
+
+<img src="data:[% assets.include('static/foo.gif', {inline_only => 1}).inline_data -%]"> 
+
+=head2 file_as_base64
+
+Object method to get file contents encoded in base64
+
+=head2 as_mime_part
+
+Object method to get file as a MIME::Lite object, takes optional hashref of arguments, arguments are : content_disposition which defaults to attachment.
+
+=head2 not_inline_only
+
+Object accessor method, returns opposite to inline_only
 
 =head1 AUTHOR
 
