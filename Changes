@@ -1,5 +1,9 @@
 Revision history for Email-Assets
 
+0.10	22/01/2015
+	- strip trailing whitespace & all newlines from output 
+        - additional pod fixes
+
 0.09    22/01/2015
 	- add attachments method
         - add missing test requirement for Test::Differences
