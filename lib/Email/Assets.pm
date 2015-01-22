@@ -7,11 +7,11 @@ Email::Assets - Manage assets for Email
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use MIME::Types;
 use Email::Assets::File;
@@ -83,9 +83,13 @@ sub get {
     return $self->_get_asset($filename);
 }
 
+sub attachments {
+    return [ grep { $_->not_inline_only } shift()->_all_assets ];
+}
+
 sub to_mime_parts {
     my $self = shift;
-    return [ map { $_->as_mime_part } grep { $_->not_inline_only } $self->_all_assets ];
+    return [ map { $_->as_mime_part } @{$self->attachments}  ];
 }
 
 =head1 DESCRIPION
@@ -119,7 +123,12 @@ to MIME::Lite message parts
 
   <img src="cid://[% assets.include('static/foo.gif').cid %]">
   [% # or %]
-  <img src="data:[% assets.include('static/foo.gif', {inline_only => 1}).inline_data">
+  <img src="data:[% assets.include('static/foo.gif', {inline_only => 1}).inline_data -%]">
+  <p>
+  <img src="cid:[% assets.include_base64(image_base64, filename, { url_encoded => 1 }).cid %]">
+</p>
+<p>
+
 
 =head1 ATTRIBUTES
 
@@ -161,9 +170,13 @@ Get all assets, returns list of Email::Assets::File objects
 
 Get an asset by name, takes relative path, returns Email::Assets::File object
 
+=head2 attachments
+
+Get assets that aren't inline_only, returns arrayref of Email::Assets::File objects
+
 =head2 to_mime_parts
 
-Returns assets that aren't inline_only as MIME::Lite objects
+Returns assets that aren't inline_only as arrayref of MIME::Lite objects
 
 =head1 SEE ALSO
 
