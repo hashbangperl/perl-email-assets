@@ -7,11 +7,11 @@ Email::Assets - Manage assets for Email
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =cut
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use MIME::Types;
 use Email::Assets::File;
@@ -94,8 +94,10 @@ sub to_mime_parts {
 
 =head1 DESCRIPION
 
-Simple to use library for file assets in email, allowing you to link using cid or inline, with export
-to MIME::Lite message parts
+HTML Email is a world of pain, this makes life a bit simpler. This is a Simple to use perl class for handling file assets in email,
+allowing you to link using cid or embed inline as data uri,  providing hopefully something close to what File::Assets does for web.
+
+Also supports exporting as MIME::Lite message parts.
 
 =head1 SYNOPSIS
 
