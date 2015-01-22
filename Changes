@@ -1,5 +1,11 @@
 Revision history for Email-Assets
 
+0.09    22/01/2015
+	- add attachments method
+        - add missing test requirement for Test::Differences
+        - set mime part content disposition as attachment, and allow option to specify
+        - more pod
+
 0.08    20/01/2015
 	- fix handling base64 added assets
 
